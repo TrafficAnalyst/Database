@@ -1,4 +1,9 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
+from werkzeug.utils import secure_filename
+import os
+from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+
 import database_server as db
 
 app = Flask(__name__)
@@ -11,7 +16,7 @@ db_manager= db.ManagerDatabase()
 def hello():
     return jsonify(status="running")
 
-#memasukkan data 
+#memasukkan data Video
 @app.route("/insert_video", methods=['POST'])
 def insert_video():
     try:
@@ -24,7 +29,7 @@ def insert_video():
                 os.makedirs(image_directory)
             
             # Simpan file gambar ke direktori "gambar"
-            video = os.path.join(video_directory, videp.filename)
+            video = os.path.join(video_directory, video.filename)
             video.save(video)
             
             # Simpan path gambar ke database
@@ -36,6 +41,8 @@ def insert_video():
     except Exception as e:
         return jsonify({"error": str(e)})
 
+#MEMASUKKAN DATA KENDARAAN 
+
 @app.route("/insert_kendaraan", methods=['POST'])
 def insert_kendaraan():
     try:
@@ -45,6 +52,7 @@ def insert_kendaraan():
     except Exception as e:
         return jsonify({"error": str(e)})
 
+#MEMASUKKAN DATA ANALISIS 
 @app.route("/insert_analisis", methods=['POST'])
 def insert_analisis():
     try:
@@ -54,7 +62,7 @@ def insert_analisis():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# menampilkan 
+#MENAMPILKAN TABEL ANALISIS  
 @app.route('/dataanalisis', methods=['GET'])
 def data_analisis():
     analisis_data = db_manager.get_analisis()
@@ -63,6 +71,7 @@ def data_analisis():
 
     return jsonify(analisis_data=analisis_data)
 
+#MENAMPILKAN DATA KENDARAAN 
 @app.route('/datakendaraan', methods=['GET'])
 def data_kendaraan():
     kendaraan_data = db_manager.get_kendaraan()
@@ -71,6 +80,7 @@ def data_kendaraan():
 
     return jsonify(kendaraan_data=kendaraan_data)
 
+#MENAMPILKAN DATA VIDEO 
 @app.route('/datavideo', methods=['GET'])
 def data_video():
     video_data = db_manager.get_video()
@@ -79,10 +89,11 @@ def data_video():
 
     return jsonify(video_data=video_data)
 
+#MENAMPILKAN DATA SATU DATABASE 
 @app.route('/datatraffic', methods=['GET'])
 def data_traffic():
-    jumlahkendaraan_data = db_manager.get_jumlahkendaraan()
-    if not jumlahkendaraan_data:
+    analisis_data = db_manager.get_analisis()
+    if not analisis_data:
         return jsonify(message="Data analisis not found"), 404
 
     kendaraan_data = db_manager.get_kendaraan()
@@ -93,16 +104,10 @@ def data_traffic():
     if not video_data:
         return jsonify(message="Data video not found"), 404
 
-    return jsonify(jumlahkendaraan_data=jumlahkendaraan_data, kendaraan_data=kendaraan_data, video_data=video_data)
+    return jsonify(analisis_data=analisis_data, kendaraan_data=kendaraan_data, video_data=video_data)
 
-@app.route('/savedata', methods=['POST'])
-def save_data():
-    data = request.json
-    if not data:
-        return jsonify(error="Invalid data format"), 400
 
-    db_manager.save_data(data)
-    return jsonify(message="Data berhasil disimpan"), 200
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
