@@ -5,16 +5,14 @@ app = Flask(__name__)
 
 # Fungsi untuk melakukan prediksi menggunakan API machine learning
 def predict_using_ml(data):
-    # Gantilah URL dengan URL API machine learning Anda
-    ml_url = "https://csbnpmnk-5000.asse.devtunnels.ms/"
+    ml_url = "https://wkf6l4sh-4000.asse.devtunnels.ms/"
     response = requests.post(ml_url, json=data)
     prediction = response.json()
     return prediction
 
 # Fungsi untuk mengirim data ke API database
 def send_data_to_database(data):
-    # Gantilah URL dengan URL API database Anda yang menerima data melalui POST
-    database_url = "https://csbnpmnk-8080.asse.devtunnels.ms/"
+    database_url = "https://wkf6l4sh-5000.asse.devtunnels.ms/"
     response = requests.post(database_url, json=data)
     return response.json()
 
