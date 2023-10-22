@@ -3,14 +3,22 @@ from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-
 import database_server as db
 
 app = Flask(__name__)
 
-video_directory = "video"
-
 db_manager= db.ManagerDatabase()
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:nafijoko@localhost:3307/trafficgate' # Sesuaikan dengan konfigurasi database Anda
+db = SQLAlchemy(app)
+
+video_directory = "video"
+class Kendaraan(db.Model):
+    id_kendaraan = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    jumlah_kendaraan = db.Column(db.Integer)
+    status_kendaraan = db.String((255))
+    sesi = db.String((255))
+
+
 
 @app.route("/", methods=['GET'])
 def hello():
@@ -47,10 +55,17 @@ def insert_video():
 def insert_kendaraan():
     try:
         data = request.get_json()
-        db_manager.insert_kendaraan(data["jumlah_kendaraan"], data["status_kendaraan"],data["sesi"])
-        return jsonify({"message": "kendaraan inserted successfully"})
+        if "id_kendaraan" in data:
+            id_kendaraan = data["id_kendaraan"]
+            new_kendaraan = Kendaraan(id_kendaraan=id_kendaraan)
+            db.session.add(new_kendaraan)
+            db.session.commit()
+            return jsonify({"message": "Kendaraan inserted successfully"})
+        else:
+            return jsonify({"error": "Incomplete data. Provide id_kendaraan and jenis_kendaraan."}), 400
     except Exception as e:
         return jsonify({"error": str(e)})
+            
 
 #MEMASUKKAN DATA ANALISIS 
 @app.route("/insert_analisis", methods=['POST'])
