@@ -1,19 +1,23 @@
 CREATE DATABASE IF NOT EXISTS trafficgate;
 USE trafficgate;
 
+CREATE TABLE IF NOT EXISTS petugas(
+  id_admin INT AUTO_INCREMENT PRIMARY KEY, 
+  user VARCHAR(255),
+  sandi INT 
+)
 CREATE TABLE IF NOT EXISTS video(
   id_video INT AUTO_INCREMENT PRIMARY KEY,
   video VARCHAR (255),
-  waktu TIMESTAMP
+  waktu TIMESTAMP,
+  sesi VARCHAR(10)
 );
-
 CREATE TABLE IF NOT EXISTS kendaraan(
   id_kendaraan INT AUTO_INCREMENT PRIMARY KEY,
   jumlah_kendaraan INT,
   status_kendaraan VARCHAR(255),
   sesi VARCHAR(255)
 );
-
 CREATE TABLE IF NOT EXISTS analisis(
   id_analisis INT AUTO_INCREMENT PRIMARY KEY,
   id_video INT, 
